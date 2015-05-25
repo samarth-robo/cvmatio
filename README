@@ -21,3 +21,5 @@ To build the project, follow the normal cmake routine from the root folder:
     >> cd build/
     >> cmake ..
     >> make -j8
+
+Modified by Samarth Brahmbhatt to make the build process simpler. Build instructions above will now put the dynamic library in a 'lib' folder and executable in a 'bin' folder.

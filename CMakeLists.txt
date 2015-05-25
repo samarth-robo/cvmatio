@@ -2,31 +2,6 @@
 cmake_minimum_required(VERSION 2.8)
 project(cvmatio)
 
-# -----------------------------------------------
-# USER-DEFINED VARIABLES
-option(BUILD_EXECUTABLE "Build as executable to test functionality" OFF)
-option(BUILD_DOC        "Build documentation with Doxygen"          ON)
-
-# --------------------
-# CATKIN
-set(BUILD_CATKIN OFF)
-if (catkin_FOUND)
-    set(BUILD_CATKIN ON)
-    if (${catkin_VERSION} VERSION_GREATER "0.5.28")
-        catkin_package(INCLUDE_DIRS include)
-    else()
-    catkin_stack()
-    catkin_project(cvmatio
-                   DEPENDS Boost OpenCV
-                   INCLUDE_DIRS include
-                   LIBRARIES cvmatio
-    )
-    endif()
-endif()
-
-# --------------------
-# COMMON
-
 # include all warning types
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wno-unused-parameter -Werror -pedantic")
 
@@ -48,21 +23,10 @@ include_directories(SYSTEM ${OPENCV_INCLUDE_DIRS}
 include_directories("include")
 
 # build the project
-add_subdirectory(src)
+add_executable(test_cvmatio src/MatlabIO.cpp src/main.cpp)
+target_link_libraries(test_cvmatio ${Boost_LIBRARIES} ${OpenCV_LIBS} ${ZLIB_LIBRARIES})
+add_library(${PROJECT_NAME} SHARED src/MatlabIO.cpp)
 
-# build the doxygen pdf
-if(BUILD_DOC)
-    add_subdirectory(doc)
-endif()
-
-# configuration summary
-message("")
-message("---------------------------------------------")
-message(${PROJECT_NAME} " Configuration Summary")
-message("")
-message("Building with ECTO/Catkin:     ${BUILD_CATKIN}")
-message("Build as executable:           ${BUILD_EXECUTABLE}")
-message("Build with documentation:      ${BUILD_DOC}")
-message("Build type:                    ${CMAKE_BUILD_TYPE}")
-message("")
-message("---------------------------------------------")
+# install
+install(TARGETS test_cvmatio RUNTIME DESTINATION ${PROJECT_SOURCE_DIR}/bin)
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/lib)
